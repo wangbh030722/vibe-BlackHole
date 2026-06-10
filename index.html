@@ -193,6 +193,22 @@ input[type=range]::-moz-range-thumb{
 }
 .hint kbd{color:var(--ink-dim)}
 
+/* ---------- language switch ---------- */
+.lang{
+  position:fixed;top:46px;left:50%;transform:translateX(-50%);z-index:23;
+  display:flex;border:1px solid var(--line);background:var(--panel);
+  backdrop-filter:blur(8px);
+  opacity:0;animation:fadeIn 1.2s ease 1.6s forwards;
+}
+.lang button{
+  background:none;border:none;color:var(--ink-faint);
+  font-family:var(--mono);font-size:10px;letter-spacing:.22em;
+  padding:7px 14px;cursor:pointer;transition:color .25s,background .25s;
+}
+.lang button + button{border-left:1px solid var(--line)}
+.lang button:hover{color:var(--ink-dim)}
+.lang button.on{color:var(--amber);background:rgba(255,162,66,.08)}
+
 /* ---------- intro veil ---------- */
 .veil{
   position:fixed;inset:0;background:var(--bg);z-index:50;pointer-events:none;
@@ -212,6 +228,7 @@ input[type=range]::-moz-range-thumb{
   .controls{left:24px;bottom:24px;width:calc(100vw - 48px)}
   .hint{display:none}
   .tick{display:none}
+  .lang{top:26px;left:auto;right:24px;transform:none}
 }
 </style>
 </head>
@@ -221,7 +238,12 @@ input[type=range]::-moz-range-thumb{
 <div class="grain"></div>
 <div class="veil"></div>
 
-<div class="nogl" id="nogl"><p>此设备不支持 WebGL<br><small>THE EVENT HORIZON REMAINS UNOBSERVED</small></p></div>
+<div class="lang" id="lang">
+  <button data-lang="zh">中</button>
+  <button data-lang="en">EN</button>
+</div>
+
+<div class="nogl" id="nogl"><p data-i18n="nogl">此设备不支持 WebGL<br><small>THE EVENT HORIZON REMAINS UNOBSERVED</small></p></div>
 
 <div class="hud">
   <span class="tick tl"></span><span class="tick tr"></span>
@@ -229,56 +251,148 @@ input[type=range]::-moz-range-thumb{
 
   <header class="title">
     <div class="kicker">Obs. Log 2026 · No.041</div>
-    <h1>事件视界<em>The Event Horizon</em></h1>
-    <p class="sub">史瓦西黑洞实时渲染 —— 每一帧对 <b>数十万条光子测地线</b> 做数值积分。你看到的吸积盘上缘,是盘背面被引力弯折后的像。</p>
+    <h1 data-i18n="h1">事件视界<em>The Event Horizon</em></h1>
+    <p class="sub" data-i18n="sub">史瓦西黑洞实时渲染 —— 每一帧对 <b>数十万条光子测地线</b> 做数值积分。你看到的吸积盘上缘,是盘背面被引力弯折后的像。</p>
   </header>
 
   <aside class="stats">
-    <div class="row"><span class="k">史瓦西半径 R<sub>s</sub></span><span class="v">2GM/c² <small>= 1.0</small></span></div>
-    <div class="row"><span class="k">光子球 PHOTON SPHERE</span><span class="v">1.5 <small>R_s</small></span></div>
-    <div class="row"><span class="k">最内稳定圆轨 ISCO</span><span class="v">3.0 <small>R_s</small></span></div>
-    <div class="row"><span class="k">测地线积分 STEPS</span><span class="v">220 <small>/ray</small></span></div>
-    <div class="row"><span class="k">帧率 FPS</span><span class="v live" id="fps">—</span></div>
-    <div class="row"><span class="k">观测距离 DIST</span><span class="v live" id="dist">20.0 <small>R_s</small></span></div>
+    <div class="row"><span class="k" data-i18n="s_rs">史瓦西半径 R<sub>s</sub></span><span class="v">2GM/c² <small>= 1.0</small></span></div>
+    <div class="row"><span class="k" data-i18n="s_photon">光子球 PHOTON SPHERE</span><span class="v">1.5 <small>R_s</small></span></div>
+    <div class="row"><span class="k" data-i18n="s_isco">最内稳定圆轨 ISCO</span><span class="v">3.0 <small>R_s</small></span></div>
+    <div class="row"><span class="k" data-i18n="s_steps">测地线积分 STEPS</span><span class="v">220 <small>/ray</small></span></div>
+    <div class="row"><span class="k" data-i18n="s_fps">帧率 FPS</span><span class="v live" id="fps">—</span></div>
+    <div class="row"><span class="k" data-i18n="s_dist">观测距离 DIST</span><span class="v live" id="dist">20.0 <small>R_s</small></span></div>
   </aside>
 
   <section class="controls">
     <div class="head"><span>OBSERVATORY CONTROLS</span><i></i></div>
     <div class="ctl">
-      <label>观测倾角 INCLINATION <output id="oPitch">12°</output></label>
+      <label><span data-i18n="c_incl">观测倾角 INCLINATION</span> <output id="oPitch">12°</output></label>
       <input type="range" id="rPitch" min="-80" max="80" value="12" step="1">
     </div>
     <div class="ctl">
-      <label>吸积盘辐射 DISK GAIN <output id="oDisk">1.00</output></label>
+      <label><span data-i18n="c_disk">吸积盘辐射 DISK GAIN</span> <output id="oDisk">1.00</output></label>
       <input type="range" id="rDisk" min="0" max="2.5" value="1" step="0.05">
     </div>
     <div class="ctl">
-      <label>时间流速 TIME FLOW <output id="oSpeed">1.0×</output></label>
+      <label><span data-i18n="c_time">时间流速 TIME FLOW</span> <output id="oSpeed">1.0×</output></label>
       <input type="range" id="rSpeed" min="0" max="4" value="1" step="0.1">
     </div>
     <div class="btnrow">
-      <button id="bOrbit" class="on">环绕 ORBIT</button>
-      <button id="bHalf">半采样 HALF-RES</button>
+      <button id="bOrbit" class="on" data-i18n="b_orbit">环绕 ORBIT</button>
+      <button id="bHalf" data-i18n="b_half">半采样 HALF-RES</button>
     </div>
   </section>
 
   <aside class="notes">
     <div class="item">
-      <h3>引力透镜<span>Gravitational Lensing</span></h3>
-      <p>光子路径被时空曲率弯折,黑洞身后的星场被拉伸成环——视界边缘是一圈被无限折叠的天空。</p>
+      <h3 data-i18n="n1_h">引力透镜<span>Gravitational Lensing</span></h3>
+      <p data-i18n="n1_p">光子路径被时空曲率弯折,黑洞身后的星场被拉伸成环——视界边缘是一圈被无限折叠的天空。</p>
     </div>
     <div class="item">
-      <h3>多普勒聚束<span>Relativistic Beaming</span></h3>
-      <p>吸积盘以接近光速旋转:朝向你运动的一侧被增亮、蓝移;远离的一侧黯淡、红移。亮暗不对称即速度本身。</p>
+      <h3 data-i18n="n2_h">多普勒聚束<span>Relativistic Beaming</span></h3>
+      <p data-i18n="n2_p">吸积盘以接近光速旋转:朝向你运动的一侧被增亮、蓝移;远离的一侧黯淡、红移。亮暗不对称即速度本身。</p>
     </div>
     <div class="item">
-      <h3>光子环<span>Photon Ring</span></h3>
-      <p>在 1.5 R<sub>s</sub> 处,光可以绕黑洞整圈公转。那道最锐利的细环,是绕行多周才逃逸的光。</p>
+      <h3 data-i18n="n3_h">光子环<span>Photon Ring</span></h3>
+      <p data-i18n="n3_p">在 1.5 R<sub>s</sub> 处,光可以绕黑洞整圈公转。那道最锐利的细环,是绕行多周才逃逸的光。</p>
     </div>
   </aside>
 
-  <div class="hint"><kbd>拖拽</kbd> 旋转视角 · <kbd>滚轮</kbd> 推近 / 拉远</div>
+  <div class="hint" data-i18n="hint"><kbd>拖拽</kbd> 旋转视角 · <kbd>滚轮</kbd> 推近 / 拉远</div>
 </div>
+
+<script>
+/* ---------- i18n : navigator-instant + IP-refine + manual override ---------- */
+(function(){
+'use strict';
+const I18N = {
+  zh:{
+    nogl:'此设备不支持 WebGL<br><small>THE EVENT HORIZON REMAINS UNOBSERVED</small>',
+    h1:'事件视界<em>The Event Horizon</em>',
+    sub:'史瓦西黑洞实时渲染 —— 每一帧对 <b>数十万条光子测地线</b> 做数值积分。你看到的吸积盘上缘,是盘背面被引力弯折后的像。',
+    s_rs:'史瓦西半径 R<sub>s</sub>', s_photon:'光子球 PHOTON SPHERE',
+    s_isco:'最内稳定圆轨 ISCO', s_steps:'测地线积分 STEPS',
+    s_fps:'帧率 FPS', s_dist:'观测距离 DIST',
+    c_incl:'观测倾角 INCLINATION', c_disk:'吸积盘辐射 DISK GAIN', c_time:'时间流速 TIME FLOW',
+    b_orbit:'环绕 ORBIT', b_half:'半采样 HALF-RES',
+    n1_h:'引力透镜<span>Gravitational Lensing</span>',
+    n1_p:'光子路径被时空曲率弯折,黑洞身后的星场被拉伸成环——视界边缘是一圈被无限折叠的天空。',
+    n2_h:'多普勒聚束<span>Relativistic Beaming</span>',
+    n2_p:'吸积盘以接近光速旋转:朝向你运动的一侧被增亮、蓝移;远离的一侧黯淡、红移。亮暗不对称即速度本身。',
+    n3_h:'光子环<span>Photon Ring</span>',
+    n3_p:'在 1.5 R<sub>s</sub> 处,光可以绕黑洞整圈公转。那道最锐利的细环,是绕行多周才逃逸的光。',
+    hint:'<kbd>拖拽</kbd> 旋转视角 · <kbd>滚轮</kbd> 推近 / 拉远',
+    title:'事件视界 — 史瓦西黑洞实时模拟'
+  },
+  en:{
+    nogl:'WebGL is not supported on this device<br><small>THE EVENT HORIZON REMAINS UNOBSERVED</small>',
+    h1:'Event Horizon<em>A Schwarzschild Black Hole</em>',
+    sub:'A Schwarzschild black hole rendered in real time — every frame integrates <b>hundreds of thousands of photon geodesics</b>. The arc above the shadow is the disk’s far side, bent up and over by gravity.',
+    s_rs:'SCHWARZSCHILD R<sub>s</sub>', s_photon:'PHOTON SPHERE',
+    s_isco:'INNERMOST ORBIT · ISCO', s_steps:'GEODESIC STEPS',
+    s_fps:'FRAME RATE · FPS', s_dist:'CAMERA DISTANCE',
+    c_incl:'INCLINATION', c_disk:'DISK GAIN', c_time:'TIME FLOW',
+    b_orbit:'ORBIT', b_half:'HALF-RES',
+    n1_h:'Gravitational Lensing<span>Light Bending</span>',
+    n1_p:'Photon paths bend with the curvature of spacetime; the star field behind the hole is stretched into a ring — the shadow’s rim is a sky folded over itself.',
+    n2_h:'Relativistic Beaming<span>Doppler</span>',
+    n2_p:'The disk spins at nearly light speed: the side rushing toward you brightens and blue-shifts, the receding side dims and reddens. The asymmetry is velocity itself.',
+    n3_h:'Photon Ring<span>1.5 R_s</span>',
+    n3_p:'At 1.5 R<sub>s</sub> light can orbit the hole completely. That sharpest thin ring is light that circled several times before escaping.',
+    hint:'<kbd>DRAG</kbd> to orbit · <kbd>SCROLL</kbd> to zoom',
+    title:'Event Horizon — Real-time Schwarzschild Black Hole'
+  }
+};
+const ZH_REGIONS = new Set(['CN','HK','MO','TW']);
+let current = null, manual = false;
+
+function apply(lang){
+  const dict = I18N[lang]; if(!dict) return;
+  current = lang;
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  document.title = dict.title;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = dict[el.getAttribute('data-i18n')];
+    if(v != null) el.innerHTML = v;
+  });
+  document.querySelectorAll('#lang button').forEach(b =>
+    b.classList.toggle('on', b.getAttribute('data-lang') === lang));
+}
+
+// 1) instant default from browser locale
+const saved = (function(){ try { return localStorage.getItem('bh_lang'); } catch(e){ return null; } })();
+manual = !!saved;
+const navZh = ((navigator.language || navigator.userLanguage || 'en') + '').toLowerCase().indexOf('zh') === 0;
+apply(saved || (navZh ? 'zh' : 'en'));
+
+// 2) refine by IP geolocation if the user hasn't chosen
+if(!manual){
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 2500);
+  fetch('https://ipapi.co/country/', { signal: ctrl.signal })
+    .then(r => r.ok ? r.text() : Promise.reject())
+    .then(cc => {
+      clearTimeout(timer);
+      cc = (cc || '').trim().toUpperCase();
+      if(manual || !/^[A-Z]{2}$/.test(cc)) return;
+      const want = ZH_REGIONS.has(cc) ? 'zh' : 'en';
+      if(want !== current) apply(want);
+    })
+    .catch(() => clearTimeout(timer));
+}
+
+// 3) manual switch — persists, wins over IP
+document.querySelectorAll('#lang button').forEach(b => {
+  b.addEventListener('click', () => {
+    manual = true;
+    const lang = b.getAttribute('data-lang');
+    try { localStorage.setItem('bh_lang', lang); } catch(e){}
+    apply(lang);
+  });
+});
+})();
+</script>
 
 <script>
 (function(){
