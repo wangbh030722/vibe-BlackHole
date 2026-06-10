@@ -2,7 +2,7 @@
 
 实时史瓦西黑洞模拟 —— 单文件 WebGL,零依赖。
 
-**在线体验 → https://wangbh030722.github.io/blackhole-sim/**
+**在线体验 → https://wangbh030722.github.io/vibe-BlackHole/**
 
 每一帧对每个像素的光子做零测地线数值积分(220 步),呈现:
 
